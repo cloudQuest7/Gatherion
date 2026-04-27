@@ -28,6 +28,8 @@ export default function DashboardLayout({
         <button 
           onClick={() => setIsSidebarOpen(true)}
           className="p-2 text-zinc-500 hover:text-white transition-colors"
+          aria-label="Open sidebar menu"
+          title="Open sidebar menu"
         >
           <Menu className="w-6 h-6" />
         </button>

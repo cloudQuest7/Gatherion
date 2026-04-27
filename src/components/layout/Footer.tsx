@@ -10,15 +10,13 @@ const Footer = () => {
           {/* Left Section - Logo & Description */}
           <div className="space-y-6">
             <div className="flex items-center space-x-3 group">
-              <div className="w-8 h-8 rounded-full bg-[#B175FF] flex items-center justify-center transform group-hover:rotate-180 transition-all duration-500 shadow-lg shadow-[#B175FF]/20">
-                <div className="w-3 h-3 bg-white rounded-full" />
-              </div>
+
               <span className="text-xl font-light tracking-tighter text-white">
             gather<span className="font-bold">ion.</span>
           </span>
             </div>
             <p className="text-zinc-500 max-w-md text-sm leading-relaxed">
-              bringing people together through soul's seamless event planning and unforgettable experiences.
+              bringing people together through soul&apos;s seamless event planning and unforgettable experiences.
             </p>
           </div>
 

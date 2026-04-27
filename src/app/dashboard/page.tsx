@@ -8,23 +8,26 @@ import {
   Users,
   Activity as ActivityIcon
 } from 'lucide-react';
-import { auth } from '@/lib/firebase';
 import Link from 'next/link';
 import { useDashboardData } from '@/hooks/useDashboardData';
 import EventMiniCard from '@/components/dashboard/EventMiniCard';
 import CreateEventModal from '@/components/modals/CreateEventModal';
+import EventDetailModal from '@/components/modals/EventDetailModal';
 import { Timestamp } from 'firebase/firestore';
 import { useState } from 'react';
+import { DashboardEvent } from '@/hooks/useDashboardData';
 
 export default function DashboardOverview() {
   const { events, guests, activities, loading, user, refreshData } = useDashboardData();
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [selectedEvent, setSelectedEvent] = useState<DashboardEvent | null>(null);
+  const [isEventDetailOpen, setIsEventDetailOpen] = useState(false);
   const userName = user?.displayName?.split(' ')[0] || 'friend';
 
   const myEvents = events.filter(e => e.creatorId === user?.uid);
   const attendingEvents = events.filter(e => e.attendees?.includes(user?.uid || ''));
 
-  const formatDate = (date: any) => {
+  const formatDate = (date: Timestamp | string | Date | null | undefined): string => {
     try {
       if (!date) return 'TBA';
       let d: Date;
@@ -36,9 +39,14 @@ export default function DashboardOverview() {
         d = date;
       }
       return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }).toLowerCase();
-    } catch (e) {
+    } catch {
       return 'TBA';
     }
+  };
+
+  const handleEventClick = (event: DashboardEvent) => {
+    setSelectedEvent(event);
+    setIsEventDetailOpen(true);
   };
 
   return (
@@ -121,7 +129,12 @@ export default function DashboardOverview() {
               </div>
             ) : (
               events.slice(0, 4).map(event => (
-                <EventMiniCard key={event.id} event={event} formatDate={formatDate} />
+                <EventMiniCard 
+                  key={event.id} 
+                  event={event} 
+                  formatDate={formatDate}
+                  onClick={() => handleEventClick(event)}
+                />
               ))
             )}
           </div>
@@ -164,6 +177,12 @@ export default function DashboardOverview() {
         isOpen={isCreateModalOpen} 
         onClose={() => setIsCreateModalOpen(false)} 
         onSuccess={refreshData}
+      />
+
+      <EventDetailModal
+        isOpen={isEventDetailOpen}
+        event={selectedEvent}
+        onClose={() => setIsEventDetailOpen(false)}
       />
     </motion.div>
   );

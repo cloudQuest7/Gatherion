@@ -2,23 +2,27 @@
 
 import { motion } from 'framer-motion';
 import { X } from 'lucide-react';
+import { memo } from 'react';
 import { DashboardEvent } from '@/hooks/useDashboardData';
 
-export default function EventMiniCard({ 
+function EventMiniCardContent({ 
   event, 
   formatDate, 
   isOwner, 
-  onDelete 
+  onDelete,
+  onClick
 }: { 
   event: DashboardEvent, 
   formatDate: (d: any) => string,
   isOwner?: boolean,
-  onDelete?: (id: string) => void
+  onDelete?: (id: string) => void,
+  onClick?: () => void
 }) {
   return (
     <motion.div 
       whileHover={{ x: 8 }}
-      className="bg-zinc-900/40 border border-white/5 p-5 rounded-[2rem] flex items-center gap-6 group hover:bg-zinc-900/60 transition-all relative overflow-hidden"
+      onClick={onClick}
+      className="bg-zinc-900/40 border border-white/5 p-5 rounded-[2rem] flex items-center gap-6 group hover:bg-zinc-900/60 transition-all relative overflow-hidden cursor-pointer"
     >
       <div className="w-20 h-20 rounded-[1.5rem] overflow-hidden flex-shrink-0 border border-white/5">
         <img 
@@ -59,6 +63,7 @@ export default function EventMiniCard({
               e.stopPropagation();
               onDelete?.(event.id);
             }}
+            title="Delete event"
             className="p-3 bg-red-500/10 hover:bg-red-500 text-red-400 hover:text-white rounded-2xl transition-all"
           >
             <X className="w-4 h-4" />
@@ -68,3 +73,5 @@ export default function EventMiniCard({
     </motion.div>
   );
 }
+
+export default memo(EventMiniCardContent);

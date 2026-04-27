@@ -1,15 +1,11 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { fadeInUp } from '@/lib/animations';
 import { useRouter } from 'next/navigation';
-import { ArrowRight, Users, Sparkles } from 'lucide-react';
+import Image from 'next/image';
+import { ArrowRight } from 'lucide-react';
 
-interface HeroProps {
-  setActiveSection: React.Dispatch<React.SetStateAction<string>>;
-}
-
-const Hero = ({ setActiveSection }: HeroProps) => {
+const Hero = () => {
   const router = useRouter();
 
   const onGetStarted = () => {
@@ -33,9 +29,9 @@ const Hero = ({ setActiveSection }: HeroProps) => {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, ease: [0.33, 1, 0.68, 1] }}
-              className="text-7xl md:text-8xl lg:text-9xl font-light tracking-tighter text-white leading-[0.9] italic"
+              className="text-6xl md:text-7xl lg:text-8xl font-light tracking-tighter text-white leading-[0.9] italic"
             >
-              plan with <span className="text-purple-400 font-normal not-italic">Gatherion.</span>
+              <span>plan with</span> <span className="text-purple-400 font-normal not-italic">Gatherion.</span>
             </motion.h1>
             
             <motion.p
@@ -83,10 +79,12 @@ const Hero = ({ setActiveSection }: HeroProps) => {
           >
             <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent z-10" />
             <div className="absolute inset-0 border border-white/5 rounded-[3rem] overflow-hidden">
-              <img 
-                src="https://images.unsplash.com/photo-1511795409834-ef04bbd61622?auto=format&fit=crop&w=1600&q=80" 
-                className="w-full h-full object-cover opacity-40 grayscale hover:grayscale-0 transition-all duration-1000"
+              <Image
+                src="https://images.unsplash.com/photo-1511795409834-ef04bbd61622?auto=format&fit=crop&w=1600&q=80"
                 alt="Event Atmosphere"
+                fill
+                className="object-cover opacity-40 grayscale hover:grayscale-0 transition-all duration-1000"
+                priority
               />
             </div>
             
