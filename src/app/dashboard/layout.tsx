@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X } from 'lucide-react';
+import { Menu } from 'lucide-react';
 import Background from '@/components/layout/Background';
 import DashboardSidebar from '@/components/layout/DashboardSidebar';
 
@@ -20,10 +20,8 @@ export default function DashboardLayout({
       {/* Mobile Header */}
       <header className="lg:hidden flex items-center justify-between p-6 bg-black/40 backdrop-blur-xl border-b border-white/5 z-30">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 bg-[#B175FF] rounded-full flex items-center justify-center">
-            <div className="w-3 h-3 bg-white rounded-full" />
-          </div>
-          <span className="text-xl font-light tracking-tight text-white italic">soul.</span>
+          
+          <span className="text-xl font-light tracking-tight text-white italic">gatherion.</span>
         </div>
         <button 
           onClick={() => setIsSidebarOpen(true)}

@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useState, useEffect, useRef } from 'react';
+import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import { 
   Plus, 
@@ -15,15 +15,14 @@ import {
   Check, 
   Copy, 
   Share2,
-  ArrowRight,
-  X
+  ArrowRight
 } from 'lucide-react';
 import { auth, db } from '@/lib/firebase';
 import { collection, addDoc, Timestamp } from 'firebase/firestore';
+import html2canvas from 'html2canvas';
 import { Theme, MockEventData } from '@/types';
 import PopupModal from '@/components/common/PopupModal';
 import CapacityModal from '@/components/modals/CapacityModal';
-import { springTransition } from '@/lib/animations';
 import { compressImage } from '@/lib/imageUtils';
 
 const themes: Theme[] = [
@@ -37,9 +36,12 @@ const themes: Theme[] = [
 
 export default function CreateEventPage() {
   const router = useRouter();
+  const cardRef = useRef<HTMLDivElement>(null);
   const [loading, setLoading] = useState(false);
   const [successData, setSuccessData] = useState<{ id: string; title: string } | null>(null);
   const [copied, setCopied] = useState(false);
+  const [cardSharing, setCardSharing] = useState(false);
+  const [createError, setCreateError] = useState<string | null>(null);
   
   // Modal states
   const [isLocationModalOpen, setIsLocationModalOpen] = useState(false);
@@ -74,14 +76,23 @@ export default function CreateEventPage() {
 
   const handleCreateEvent = async () => {
     console.log('Attempting to create event...', mockEventData);
+    
+    // Validation
+    if (!mockEventData.title.trim()) {
+      setCreateError('Please enter an event title');
+      return;
+    }
+    
     if (!auth.currentUser) {
       console.error('No user logged in');
-      alert('You must be logged in to create an event. Please log in and try again.');
+      setCreateError('You must be logged in to create an event');
       router.push('/login');
       return;
     }
     
     setLoading(true);
+    setCreateError(null);
+    
     try {
       console.log('Parsing date:', `${mockEventData.date}T${mockEventData.startTime}`);
       const dateObj = new Date(`${mockEventData.date}T${mockEventData.startTime}`);
@@ -123,11 +134,15 @@ export default function CreateEventPage() {
       console.log('Saving to Firestore:', eventData);
       const docRef = await addDoc(collection(db, 'events'), eventData);
       console.log('Event created with ID:', docRef.id);
-      setSuccessData({ id: docRef.id, title: eventData.title });
+      
+      // Update both states to ensure proper UI transition
+      const successPayload = { id: docRef.id, title: eventData.title };
+      setLoading(false);
+      setSuccessData(successPayload);
     } catch (error) {
       console.error('Error creating event:', error);
-      alert(`Failed to create event: ${error instanceof Error ? error.message : 'Unknown error'}`);
-    } finally {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+      setCreateError(errorMessage);
       setLoading(false);
     }
   };
@@ -138,6 +153,39 @@ export default function CreateEventPage() {
     navigator.clipboard.writeText(url);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handleShareCard = async () => {
+    if (!cardRef.current) return;
+    
+    try {
+      setCardSharing(true);
+      const canvas = await html2canvas(cardRef.current, {
+        backgroundColor: null,
+        scale: 2,
+        logging: false,
+        useCORS: true,
+        allowTaint: true,
+        imageTimeout: 0,
+      });
+      
+      // Convert canvas to blob and download
+      canvas.toBlob((blob) => {
+        if (!blob) return;
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${successData?.title || 'event'}-card.png`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        setCardSharing(false);
+      }, 'image/png', 1);
+    } catch (error) {
+      console.error('Failed to generate card:', error);
+      setCardSharing(false);
+    }
   };
 
   if (successData) {
@@ -161,7 +209,34 @@ export default function CreateEventPage() {
         </div>
 
         {/* The Cool Cozy Vibrant Card */}
-        <div className="relative group max-w-md mx-auto w-full">
+        <div className="relative group max-w-md mx-auto w-full h-fit">
+          {/* Hover Preview Card */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9, y: 20 }}
+            whileHover={{ opacity: 1, scale: 1, y: 0 }}
+            transition={{ duration: 0.3, ease: "easeOut" }}
+            className="absolute -inset-4 md:-inset-8 pointer-events-none group-hover:pointer-events-auto z-50 flex items-center justify-center"
+          >
+            <div className="w-full max-w-sm bg-gradient-to-br from-zinc-900 via-zinc-900 to-zinc-950 backdrop-blur-2xl border-2 border-[#B175FF]/50 p-8 rounded-[2.5rem] shadow-2xl shadow-[#B175FF]/30">
+              <div className="space-y-6 text-center">
+                <div className="flex justify-center">
+                  <Sparkles className="w-8 h-8 text-[#B175FF] animate-spin" />
+                </div>
+                <div>
+                  <p className="text-xs uppercase tracking-[0.3em] font-bold text-[#B175FF] mb-3">Share on Social</p>
+                  <h4 className="text-2xl font-bold text-white mb-4 line-clamp-2">{successData.title}</h4>
+                  <div className="space-y-2 text-sm text-zinc-400">
+                    <p>📅 {mockEventData.date} at {mockEventData.startTime}</p>
+                    <p>📍 {mockEventData.location || 'Secret Location'}</p>
+                  </div>
+                </div>
+                <div className="pt-4 border-t border-white/10">
+                  <p className="text-[10px] text-zinc-500 uppercase tracking-widest font-bold">← Hover to preview</p>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+
           <motion.div 
             animate={{ 
               scale: [1, 1.02, 1],
@@ -174,7 +249,10 @@ export default function CreateEventPage() {
             }}
             className="absolute inset-0 bg-gradient-to-r from-[#B175FF] via-indigo-600 to-[#B175FF] rounded-[3rem] blur-3xl opacity-20 group-hover:opacity-40 transition-opacity" 
           />
-          <div className="relative bg-zinc-900/80 backdrop-blur-2xl border border-white/10 p-8 md:p-10 rounded-[3rem] text-left space-y-6 shadow-2xl overflow-hidden">
+          <div 
+            ref={cardRef}
+            className="relative bg-zinc-900/80 backdrop-blur-2xl border border-white/10 p-8 md:p-10 rounded-[3rem] text-left space-y-6 shadow-2xl overflow-hidden transition-all group-hover:shadow-2xl group-hover:shadow-[#B175FF]/20 group-hover:scale-105"
+          >
             <div className="absolute top-0 right-0 p-8 opacity-10">
               <Sparkles className="w-16 h-16 md:w-24 md:h-24 text-white" />
             </div>
@@ -236,10 +314,12 @@ export default function CreateEventPage() {
           <motion.button
             whileHover={{ scale: 1.05, y: -2 }}
             whileTap={{ scale: 0.95 }}
-            className="w-full sm:w-auto bg-zinc-900 border border-white/10 text-white px-10 py-5 rounded-full flex items-center justify-center gap-3 font-bold uppercase tracking-widest text-xs transition-all hover:bg-zinc-800"
+            onClick={handleShareCard}
+            disabled={cardSharing}
+            className="w-full sm:w-auto bg-zinc-900 border border-white/10 text-white px-10 py-5 rounded-full flex items-center justify-center gap-3 font-bold uppercase tracking-widest text-xs transition-all hover:bg-zinc-800 disabled:opacity-60 disabled:cursor-not-allowed"
           >
             <Share2 className="w-4 h-4" />
-            Share Card
+            {cardSharing ? 'Generating...' : 'Download Card'}
           </motion.button>
         </div>
 
@@ -523,16 +603,27 @@ export default function CreateEventPage() {
             </div>
 
             {/* Launch Button */}
-            <motion.button
-              whileHover={{ scale: 1.02, y: -2 }}
-              whileTap={{ scale: 0.98 }}
-              disabled={loading || !mockEventData.title}
-              onClick={handleCreateEvent}
-              className="w-full bg-white text-black py-6 rounded-[2rem] font-bold uppercase tracking-[0.3em] text-sm shadow-2xl shadow-white/10 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-4"
-            >
-              {loading ? 'Launching...' : 'Launch Event'}
-              {!loading && <ArrowRight className="w-5 h-5" />}
-            </motion.button>
+            <div className="space-y-4">
+              {createError && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="bg-red-500/20 border border-red-500/50 rounded-2xl p-4 text-red-400 text-sm"
+                >
+                  {createError}
+                </motion.div>
+              )}
+              <motion.button
+                whileHover={{ scale: 1.02, y: -2 }}
+                whileTap={{ scale: 0.98 }}
+                disabled={loading || !mockEventData.title}
+                onClick={handleCreateEvent}
+                className="w-full bg-white text-black py-6 rounded-[2rem] font-bold uppercase tracking-[0.3em] text-sm shadow-2xl shadow-white/10 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-4"
+              >
+                {loading ? 'Launching...' : 'Launch Event'}
+                {!loading && <ArrowRight className="w-5 h-5" />}
+              </motion.button>
+            </div>
           </div>
         </div>
       </motion.div>

@@ -33,7 +33,12 @@ export default function DashboardSidebar({ onClose }: { onClose?: () => void }) 
           <span className="text-xl font-light tracking-tight text-white italic">Gatherion.</span>
         </Link>
         {onClose && (
-          <button onClick={onClose} className="lg:hidden p-2 text-zinc-500 hover:text-white">
+          <button 
+            onClick={onClose} 
+            className="lg:hidden p-2 text-zinc-500 hover:text-white"
+            aria-label="Close sidebar"
+            title="Close sidebar"
+          >
             <X className="w-6 h-6" />
           </button>
         )}
