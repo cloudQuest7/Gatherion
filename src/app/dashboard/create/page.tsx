@@ -23,6 +23,7 @@ import { Theme, MockEventData } from '@/types';
 import PopupModal from '@/components/common/PopupModal';
 import CapacityModal from '@/components/modals/CapacityModal';
 import { compressImage } from '@/lib/imageUtils';
+import Image from 'next/image';
 
 const themes: Theme[] = [
   { name: 'minimal', color: 'bg-white', bgColor: 'bg-zinc-900/50' },
@@ -256,9 +257,10 @@ export default function CreateEventPage() {
             >
               {mockEventData?.coverImage ? (
                 <>
-                  <img
+                  <Image
                     src={mockEventData.coverImage}
                     alt="Event cover"
+                    fill
                     className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                   />
                   <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-[2px]">

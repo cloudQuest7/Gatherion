@@ -1,8 +1,10 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import Image from 'next/image';
 import { X } from 'lucide-react';
 import { memo } from 'react';
+import { Timestamp } from 'firebase/firestore';
 import { DashboardEvent } from '@/hooks/useDashboardData';
 
 function EventMiniCardContent({ 
@@ -24,11 +26,12 @@ function EventMiniCardContent({
       onClick={onClick}
       className="bg-zinc-900/40 border border-white/5 p-5 rounded-[2rem] flex items-center gap-6 group hover:bg-zinc-900/60 transition-all relative overflow-hidden cursor-pointer"
     >
-      <div className="w-20 h-20 rounded-[1.5rem] overflow-hidden flex-shrink-0 border border-white/5">
-        <img 
-          src={event.coverImage || `https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?auto=format&fit=crop&w=200&q=80`} 
-          className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700 scale-110 group-hover:scale-100"
+      <div className="w-20 h-20 rounded-[1.5rem] overflow-hidden flex-shrink-0 border border-white/5 relative">
+        <Image
+          src={event.coverImage || `https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?auto=format&fit=crop&w=200&q=80`}
           alt="Event"
+          fill
+          className="object-cover grayscale group-hover:grayscale-0 transition-all duration-700 scale-110 group-hover:scale-100"
         />
       </div>
       <div className="flex-1 min-w-0">

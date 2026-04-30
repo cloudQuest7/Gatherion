@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { Plus, Calendar, MapPin, FileText, Ticket, Users, UserCheck } from 'lucide-react';
 import { MockEventData, Theme, Event, Notification } from '@/types';
@@ -96,9 +97,10 @@ const ModernEditor = ({
             >
               {mockEventData?.coverImage ? (
                 <>
-                  <img
+                  <Image
                     src={mockEventData.coverImage}
                     alt="Event cover"
+                    fill
                     className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 grayscale group-hover:grayscale-0"
                   />
                   <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-[2px]">

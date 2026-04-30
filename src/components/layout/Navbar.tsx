@@ -98,6 +98,7 @@ const Navbar = ({ isScrolled, activeSection, setActiveSection, setIsCalendarModa
             <button 
               onClick={() => setIsMobileMenuOpen(false)}
               className="absolute top-8 right-8 text-white p-2"
+              aria-label="Close menu"
             >
               <X className="w-8 h-8" />
             </button>

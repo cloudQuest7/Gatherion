@@ -199,7 +199,7 @@ export default function SettingsPage() {
               </label>
               <div className="w-full bg-black/40 border border-white/5 rounded-2xl px-6 py-4 text-zinc-500 flex items-center gap-3 italic">
                 <Mail className="w-4 h-4" />
-                <span className="truncate">{email}</span>
+                <span className="truncate">{auth.currentUser?.email}</span>
               </div>
             </div>
           </div>

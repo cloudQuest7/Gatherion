@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Plus } from 'lucide-react';
 import PopupModal from '@/components/common/PopupModal';
@@ -33,10 +34,11 @@ const RsvpModal = ({ event, isOpen, onClose, onConfirm }: RsvpModalProps) => {
     >
       <div className="space-y-6">
         <div className="relative h-40 -mx-6 -mt-6 mb-6 overflow-hidden">
-          <img 
-            src={event.coverImage || '/default-event-cover.jpg'} 
+          <Image
+            src={event.coverImage || '/default-event-cover.jpg'}
             alt={event.title}
-            className="w-full h-full object-cover transition-transform duration-700 hover:scale-110"
+            fill
+            className="object-cover transition-transform duration-700 hover:scale-110"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-gray-800 via-transparent to-transparent" />
         </div>

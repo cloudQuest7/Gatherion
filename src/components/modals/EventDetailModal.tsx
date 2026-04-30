@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Share2, Copy, Check, MapPin, Calendar, Users, Lock, Link as LinkIcon } from 'lucide-react';
 import { DashboardEvent } from '@/hooks/useDashboardData';
@@ -87,9 +88,10 @@ export default function EventDetailModal({ isOpen, event, onClose }: EventDetail
           >
             {/* Header with Image */}
             <div className="relative h-64 md:h-80 overflow-hidden">
-              <img 
+              <Image
                 src={event.coverImage || `https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?auto=format&fit=crop&w=800&q=80`}
                 alt={event.title}
+                fill
                 className="w-full h-full object-cover"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-zinc-900 via-transparent to-transparent" />

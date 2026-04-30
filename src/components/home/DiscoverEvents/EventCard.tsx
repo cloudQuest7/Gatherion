@@ -1,6 +1,7 @@
 'use client';
 
 import { motion, AnimatePresence } from 'framer-motion';
+import Image from 'next/image';
 import { Calendar, MapPin, ArrowRight, Check } from 'lucide-react';
 import { Event, UserProfile } from '@/types';
 import { fadeInUp } from '@/lib/animations';
@@ -26,9 +27,10 @@ const EventCard = ({ event, index, onRsvp, attendees, isRsvpd }: EventCardProps)
       className="group bg-zinc-900/40 backdrop-blur-xl border border-white/5 rounded-[2.5rem] overflow-hidden hover:border-[#B175FF]/30 transition-all duration-700 relative"
     >
       <div className="relative h-56 overflow-hidden">
-        <img 
-          src={event.coverImage || '/default-event-cover.jpg'} 
+        <Image
+          src={event.coverImage || '/default-event-cover.jpg'}
           alt={event.title}
+          fill
           className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110 grayscale group-hover:grayscale-0"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-80" />

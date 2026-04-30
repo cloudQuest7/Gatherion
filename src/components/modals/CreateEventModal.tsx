@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import { X, Calendar, MapPin, AlignLeft, Type, Shield, Users, Check, Copy, Share2, Sparkles, ArrowRight } from 'lucide-react';
@@ -31,6 +31,11 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
     maxAttendees: ''
   });
 
+  const handleClose = useCallback(() => {
+    setSuccessData(null);
+    onClose();
+  }, [onClose]);
+
   // Automatically redirect after success
   useEffect(() => {
     if (successData) {
@@ -40,7 +45,7 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
       }, 5000);
       return () => clearTimeout(timer);
     }
-  }, [successData]);
+  }, [successData, handleClose, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -98,11 +103,6 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
     navigator.clipboard.writeText(url);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
-  };
-
-  const handleClose = () => {
-    setSuccessData(null);
-    onClose();
   };
 
   return (
@@ -178,7 +178,7 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                       <p className="text-[8px] font-bold uppercase tracking-widest text-zinc-600">bring your vision to life</p>
                     </div>
                   </div>
-                  <button onClick={handleClose} className="p-3 bg-white/5 rounded-2xl text-zinc-500 hover:text-white transition-colors">
+                  <button onClick={handleClose} className="p-3 bg-white/5 rounded-2xl text-zinc-500 hover:text-white transition-colors" aria-label="Close modal">
                     <X className="w-5 h-5" />
                   </button>
                 </div>
@@ -281,6 +281,7 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                       <button
                         type="button"
                         onClick={() => setFormData({...formData, isPrivate: !formData.isPrivate})}
+                        aria-label={`Toggle private event - currently ${formData.isPrivate ? 'on' : 'off'}`}
                         className={`w-12 h-6 rounded-full transition-all relative ${formData.isPrivate ? 'bg-[#B175FF]' : 'bg-zinc-800'}`}
                       >
                         <motion.div 

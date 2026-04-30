@@ -1,6 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import Image from 'next/image';
 import { CheckCircle2 } from 'lucide-react';
 import { useDashboardData } from '@/hooks/useDashboardData';
 
@@ -36,8 +37,13 @@ export default function GuestsPage() {
               whileHover={{ y: -5, x: 4 }}
               className="bg-zinc-900/40 border border-white/5 p-6 rounded-[2.5rem] flex items-center gap-4 group hover:border-[#B175FF]/20 hover:bg-zinc-900/60 transition-all"
             >
-              <div className="w-14 h-14 rounded-[1.25rem] overflow-hidden border border-white/5 grayscale group-hover:grayscale-0 transition-all bg-zinc-800 shrink-0">
-                <img src={guest.photoURL || `https://randomuser.me/api/portraits/thumb/${i % 2 === 0 ? 'men' : 'women'}/${(i % 50) + 20}.jpg`} alt="Guest" className="w-full h-full object-cover" />
+              <div className="w-14 h-14 rounded-[1.25rem] overflow-hidden border border-white/5 grayscale group-hover:grayscale-0 transition-all bg-zinc-800 shrink-0 relative">
+                <Image
+                  src={guest.photoURL || `https://randomuser.me/api/portraits/thumb/${i % 2 === 0 ? 'men' : 'women'}/${(i % 50) + 20}.jpg`}
+                  alt="Guest"
+                  fill
+                  className="object-cover"
+                />
               </div>
               <div className="flex-1 min-w-0">
                 <h4 className="text-white font-light text-lg italic group-hover:text-[#B175FF] transition-colors truncate">{guest.displayName}</h4>

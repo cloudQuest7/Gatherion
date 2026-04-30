@@ -26,7 +26,7 @@ export interface DashboardEvent {
 export interface Guest {
   id: string;
   displayName: string;
-  email: string;
+  email?: string;
   photoURL?: string;
   attendingEvent: string;
 }
@@ -80,10 +80,16 @@ export function useDashboardData() {
             allAttendeeIds.map(id => getDoc(doc(db, 'users', id)))
           );
 
-          const usersMap: Record<string, Record<string, unknown>> = {};
+          interface UserData {
+            displayName?: string;
+            email?: string;
+            photoURL?: string;
+          }
+
+          const usersMap: Record<string, UserData> = {};
           userDocs.forEach(userDoc => {
             if (userDoc.exists()) {
-              usersMap[userDoc.id] = userDoc.data();
+              usersMap[userDoc.id] = userDoc.data() as UserData;
             }
           });
 

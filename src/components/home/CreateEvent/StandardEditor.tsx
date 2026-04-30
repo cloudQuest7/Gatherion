@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Check, ChevronDown, MapPin, Users, Plus } from 'lucide-react';
 import { StandardEventData } from '@/types';
@@ -183,6 +184,7 @@ const StandardEditor = ({
                 </label>
                 <div className="relative">
                   <select
+                    aria-label="Event duration"
                     className="w-full px-5 py-3 bg-gray-900/50 border border-gray-700/50 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50 appearance-none transition-all cursor-pointer"
                   >
                     <option value="1">1 hour</option>
@@ -255,7 +257,7 @@ const StandardEditor = ({
                 >
                   {eventData.coverImage ? (
                     <div className="relative w-full h-full p-2">
-                      <img src={eventData.coverImage} className="w-full h-full object-cover rounded-xl" alt="Preview" />
+                      <Image src={eventData.coverImage} fill className="w-full h-full object-cover rounded-xl" alt="Preview" />
                       <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center rounded-xl">
                         <p className="text-white text-sm font-medium">Change Image</p>
                       </div>
