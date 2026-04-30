@@ -3,25 +3,21 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Plus } from 'lucide-react';
-import { db } from '@/lib/firebase';
+import { auth, db } from '@/lib/firebase';
 import { deleteDoc, doc } from 'firebase/firestore';
 import { useDashboardData } from '@/hooks/useDashboardData';
 import CreateEventModal from '@/components/modals/CreateEventModal';
-import EventDetailModal from '@/components/modals/EventDetailModal';
 import EventMiniCard from '@/components/dashboard/EventMiniCard';
 import { Timestamp } from 'firebase/firestore';
-import { DashboardEvent } from '@/hooks/useDashboardData';
 
 export default function MyEventsPage() {
-  const { events, loading, user, refreshData } = useDashboardData();
+  const { events, loading, refreshData } = useDashboardData();
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const [selectedEvent, setSelectedEvent] = useState<DashboardEvent | null>(null);
-  const [isEventDetailOpen, setIsEventDetailOpen] = useState(false);
 
-  const myEvents = events.filter(e => e.creatorId === user?.uid);
-  const attendingEvents = events.filter(e => e.attendees?.includes(user?.uid || ''));
+  const myEvents = events.filter(e => e.creatorId === auth.currentUser?.uid);
+  const attendingEvents = events.filter(e => e.attendees?.includes(auth.currentUser?.uid || ''));
 
-  const formatDate = (date: Timestamp | string | Date | null) => {
+  const formatDate = (date: Timestamp | string | Date | null | undefined): string => {
     try {
       if (!date) return 'TBA';
       let d: Date;
@@ -46,11 +42,6 @@ export default function MyEventsPage() {
     } catch (error) {
       console.error('Error deleting event:', error);
     }
-  };
-
-  const handleEventClick = (event: DashboardEvent) => {
-    setSelectedEvent(event);
-    setIsEventDetailOpen(true);
   };
 
   return (
@@ -100,7 +91,6 @@ export default function MyEventsPage() {
                   formatDate={formatDate} 
                   isOwner={true}
                   onDelete={handleDeleteEvent}
-                  onClick={() => handleEventClick(event)}
                 />
               ))
             )}
@@ -128,8 +118,7 @@ export default function MyEventsPage() {
                 <EventMiniCard 
                   key={event.id} 
                   event={event} 
-                  formatDate={formatDate}
-                  onClick={() => handleEventClick(event)}
+                  formatDate={formatDate} 
                 />
               ))
             )}
@@ -141,12 +130,6 @@ export default function MyEventsPage() {
         isOpen={isCreateModalOpen} 
         onClose={() => setIsCreateModalOpen(false)} 
         onSuccess={refreshData}
-      />
-
-      <EventDetailModal
-        isOpen={isEventDetailOpen}
-        event={selectedEvent}
-        onClose={() => setIsEventDetailOpen(false)}
       />
     </motion.div>
   );

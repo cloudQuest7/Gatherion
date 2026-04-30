@@ -25,12 +25,6 @@ const RsvpModal = ({ event, isOpen, onClose, onConfirm }: RsvpModalProps) => {
     onClose();
   };
 
-  const springTransitionLocal = {
-    type: 'spring',
-    damping: 25,
-    stiffness: 500
-  };
-
   return (
     <PopupModal
       isOpen={isOpen}
@@ -56,7 +50,7 @@ const RsvpModal = ({ event, isOpen, onClose, onConfirm }: RsvpModalProps) => {
               {['going', 'maybe', 'not-going'].map((status) => (
                 <button
                   key={status}
-                  onClick={() => setLocalRsvpStatus(status as any)}
+                  onClick={() => setLocalRsvpStatus(status as 'going' | 'maybe' | 'not-going')}
                   className={`px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-300
                     ${localRsvpStatus === status 
                       ? 'bg-purple-600 text-white shadow-lg shadow-purple-500/20 ring-2 ring-purple-400/20' 

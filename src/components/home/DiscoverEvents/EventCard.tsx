@@ -1,7 +1,7 @@
 'use client';
 
 import { motion, AnimatePresence } from 'framer-motion';
-import { Calendar, MapPin, Users, ArrowRight, Check } from 'lucide-react';
+import { Calendar, MapPin, ArrowRight, Check } from 'lucide-react';
 import { Event, UserProfile } from '@/types';
 import { fadeInUp } from '@/lib/animations';
 import AttendeePreview from './AttendeePreview';

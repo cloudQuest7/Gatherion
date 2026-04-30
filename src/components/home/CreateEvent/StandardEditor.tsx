@@ -19,7 +19,6 @@ interface StandardEditorProps {
 
 const StandardEditor = ({
   formStep,
-  setFormStep,
   eventData,
   setEventData,
   handleSubmit,

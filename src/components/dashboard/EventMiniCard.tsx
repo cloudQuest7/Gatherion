@@ -13,7 +13,7 @@ function EventMiniCardContent({
   onClick
 }: { 
   event: DashboardEvent, 
-  formatDate: (d: any) => string,
+  formatDate: (d: Timestamp | string | Date | null | undefined) => string,
   isOwner?: boolean,
   onDelete?: (id: string) => void,
   onClick?: () => void

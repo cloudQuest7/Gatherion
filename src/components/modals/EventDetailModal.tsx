@@ -20,7 +20,7 @@ export default function EventDetailModal({ isOpen, event, onClose }: EventDetail
 
   const eventUrl = `${typeof window !== 'undefined' ? window.location.origin : ''}/event/${event.id}`;
 
-  const formatDate = (date: any) => {
+  const formatDate = (date: Timestamp | string | Date | null | undefined): string => {
     try {
       if (!date) return 'TBA';
       let d: Date;
@@ -32,7 +32,7 @@ export default function EventDetailModal({ isOpen, event, onClose }: EventDetail
         d = date;
       }
       return d.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
-    } catch (e) {
+    } catch {
       return 'TBA';
     }
   };

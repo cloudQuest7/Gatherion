@@ -33,7 +33,6 @@ interface UserSettings {
 export default function SettingsPage() {
   const router = useRouter();
   const [displayName, setDisplayName] = useState(auth.currentUser?.displayName || '');
-  const [email, setEmail] = useState(auth.currentUser?.email || '');
   const [isUpdatingProfile, setIsUpdatingProfile] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
   
@@ -283,7 +282,7 @@ export default function SettingsPage() {
                 <motion.button
                   key={value}
                   whileHover={{ y: -2 }}
-                  onClick={() => handleProfileVisibilityChange(value as any)}
+                  onClick={() => handleProfileVisibilityChange(value as 'public' | 'friends' | 'private')}
                   className={`p-4 rounded-2xl border transition-all text-left ${
                     settings.profileVisibility === value
                       ? 'bg-[#B175FF]/10 border-[#B175FF]/50'

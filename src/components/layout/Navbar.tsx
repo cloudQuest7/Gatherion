@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, Menu, X, User, Sparkles, Calendar } from 'lucide-react';
 import { scrollToSection } from '@/lib/utils';
@@ -17,6 +17,7 @@ const Navbar = ({ isScrolled, activeSection, setActiveSection, setIsCalendarModa
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const navItems = [
+    { id: 'features', label: 'Features', icon: Sparkles },
     { id: 'create', label: 'Create', icon: Plus },
     { id: 'discover', label: 'Explore', icon: Sparkles },
     { id: 'calendar', label: 'Calendar', icon: Calendar, isModal: true },

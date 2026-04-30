@@ -1,7 +1,6 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { springTransition } from '@/lib/animations';
 
 interface InterfaceSwitchProps {
   interfaceType: 'standard' | 'mock';
@@ -15,7 +14,7 @@ const InterfaceSwitch = ({ interfaceType, setInterfaceType }: InterfaceSwitchPro
         {['mock', 'standard'].map((type) => (
           <button
             key={type}
-            onClick={() => setInterfaceType(type as any)}
+            onClick={() => setInterfaceType(type as 'standard' | 'mock')}
             className={`relative z-10 px-8 py-3 rounded-full text-[10px] font-bold uppercase tracking-widest transition-colors duration-500 ${
               interfaceType === type 
                 ? 'text-black' 

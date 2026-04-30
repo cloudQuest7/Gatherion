@@ -8,24 +8,21 @@ import {
   Users,
   Activity as ActivityIcon
 } from 'lucide-react';
+import { auth } from '@/lib/firebase';
 import Link from 'next/link';
 import { useDashboardData } from '@/hooks/useDashboardData';
 import EventMiniCard from '@/components/dashboard/EventMiniCard';
 import CreateEventModal from '@/components/modals/CreateEventModal';
-import EventDetailModal from '@/components/modals/EventDetailModal';
 import { Timestamp } from 'firebase/firestore';
 import { useState } from 'react';
-import { DashboardEvent } from '@/hooks/useDashboardData';
 
 export default function DashboardOverview() {
-  const { events, guests, activities, loading, user, refreshData } = useDashboardData();
+  const { events, guests, activities, loading, refreshData } = useDashboardData();
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const [selectedEvent, setSelectedEvent] = useState<DashboardEvent | null>(null);
-  const [isEventDetailOpen, setIsEventDetailOpen] = useState(false);
-  const userName = user?.displayName?.split(' ')[0] || 'friend';
+  const userName = auth.currentUser?.displayName?.split(' ')[0] || 'friend';
 
-  const myEvents = events.filter(e => e.creatorId === user?.uid);
-  const attendingEvents = events.filter(e => e.attendees?.includes(user?.uid || ''));
+  const myEvents = events.filter(e => e.creatorId === auth.currentUser?.uid);
+  const attendingEvents = events.filter(e => e.attendees?.includes(auth.currentUser?.uid || ''));
 
   const formatDate = (date: Timestamp | string | Date | null | undefined): string => {
     try {
@@ -42,11 +39,6 @@ export default function DashboardOverview() {
     } catch {
       return 'TBA';
     }
-  };
-
-  const handleEventClick = (event: DashboardEvent) => {
-    setSelectedEvent(event);
-    setIsEventDetailOpen(true);
   };
 
   return (
@@ -129,12 +121,7 @@ export default function DashboardOverview() {
               </div>
             ) : (
               events.slice(0, 4).map(event => (
-                <EventMiniCard 
-                  key={event.id} 
-                  event={event} 
-                  formatDate={formatDate}
-                  onClick={() => handleEventClick(event)}
-                />
+                <EventMiniCard key={event.id} event={event} formatDate={formatDate} />
               ))
             )}
           </div>
@@ -177,12 +164,6 @@ export default function DashboardOverview() {
         isOpen={isCreateModalOpen} 
         onClose={() => setIsCreateModalOpen(false)} 
         onSuccess={refreshData}
-      />
-
-      <EventDetailModal
-        isOpen={isEventDetailOpen}
-        event={selectedEvent}
-        onClose={() => setIsEventDetailOpen(false)}
       />
     </motion.div>
   );

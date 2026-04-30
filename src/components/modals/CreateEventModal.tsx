@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import { X, Calendar, MapPin, AlignLeft, Type, Shield, Users, Check, Copy, Share2, Sparkles, ArrowRight } from 'lucide-react';
@@ -31,65 +31,34 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
     maxAttendees: ''
   });
 
-  const handleClose = useCallback(() => {
-    setSuccessData(null);
-    setError(null);
-    setLoading(false);
-    onClose();
-  }, [onClose]);
-
   // Automatically redirect after success
   useEffect(() => {
-    if (successData && successData.id !== 'creating...') {
+    if (successData) {
       const timer = setTimeout(() => {
         handleClose();
         router.push('/dashboard');
-      }, 2000);
+      }, 5000);
       return () => clearTimeout(timer);
     }
-  }, [successData, router, handleClose]);
+  }, [successData]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    // Validation
     if (!auth.currentUser) {
       setError('You must be logged in to create an event');
       return;
     }
 
-    if (!formData.title.trim()) {
-      setError('Event title is required');
-      return;
-    }
-
-    if (!formData.date || !formData.time) {
-      setError('Date and time are required');
-      return;
-    }
-
-    if (!formData.location.trim()) {
-      setError('Location is required');
-      return;
-    }
-
-    if (!formData.description.trim()) {
-      setError('Description is required');
-      return;
-    }
-
     setLoading(true);
     setError(null);
-
     try {
       const dateObj = new Date(`${formData.date}T${formData.time}`);
       if (isNaN(dateObj.getTime())) {
-        throw new Error('Invalid date and time');
+        throw new Error('Please enter a valid date and time');
       }
 
       const eventData = {
         ...formData,
-        eventType: formData.isPrivate ? 'private' : 'public',
         creatorId: auth.currentUser.uid,
         creatorName: auth.currentUser.displayName || 'Anonymous',
         createdAt: Timestamp.now(),
@@ -98,23 +67,12 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
         eventTimestamp: Timestamp.fromDate(dateObj)
       };
 
-      // Show optimistic success screen
-      setSuccessData({ id: 'creating...', title: formData.title });
-
-      // Create event with timeout protection
-      const timeoutPromise = new Promise((_, reject) => 
-        setTimeout(() => reject(new Error('Request timeout')), 10000)
-      );
-
-      const createPromise = addDoc(collection(db, 'events'), eventData);
-      
-      const docRef = await Promise.race([createPromise, timeoutPromise]);
-      
-      // Update with real ID once created
-      setSuccessData({ id: (docRef as any).id, title: formData.title });
+      const docRef = await addDoc(collection(db, 'events'), eventData);
+      setSuccessData({ id: docRef.id, title: formData.title });
       onSuccess?.();
-
-      // Reset form
+      
+      // Don't close immediately, show success state
+      // Reset form for next time
       setFormData({
         title: '',
         date: '',
@@ -125,22 +83,26 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
         isPrivate: false,
         maxAttendees: ''
       });
-      
-      setLoading(false);
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'Unknown error';
       console.error('Error creating event:', err);
-      setError(err.message || 'Failed to create event. Please try again.');
-      setSuccessData(null);
+      setError(`Failed to create event: ${errorMessage}`);
+    } finally {
       setLoading(false);
     }
   };
 
   const copyToClipboard = () => {
-    if (!successData || successData.id === 'creating...') return;
+    if (!successData) return;
     const url = `${window.location.origin}/event/${successData.id}`;
     navigator.clipboard.writeText(url);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handleClose = () => {
+    setSuccessData(null);
+    onClose();
   };
 
   return (
@@ -200,7 +162,7 @@ export default function CreateEventModal({ isOpen, onClose, onSuccess }: CreateE
                       Go to Dashboard
                       <ArrowRight className="w-4 h-4" />
                     </button>
-                    <p className="text-zinc-700 text-[8px] font-bold uppercase tracking-widest italic animate-pulse">Redirecting in a moment...</p>
+                    <p className="text-zinc-700 text-[8px] font-bold uppercase tracking-widest italic animate-pulse">Redirecting automatically in a few seconds...</p>
                   </div>
                 </div>
               </div>

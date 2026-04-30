@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 
 // Layout & Common Components
 import Navbar from '@/components/layout/Navbar';
@@ -12,6 +12,7 @@ import NotificationToast from '@/components/common/NotificationToast';
 
 // Home Sections
 import Hero from '@/components/home/Hero';
+import BentoFeatures from '@/components/home/BentoFeatures';
 import CreateEventSection from '@/components/home/CreateEvent';
 import DiscoverEventsSection from '@/components/home/DiscoverEvents';
 
@@ -225,8 +226,10 @@ export default function GatherApp() {
       />
 
       <main>
-        <Hero setActiveSection={setActiveSection} />
+        <Hero />
         
+        <BentoFeatures />
+
         <CreateEventSection 
           interfaceType={interfaceType}
           setInterfaceType={setInterfaceType}
